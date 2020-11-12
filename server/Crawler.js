@@ -1,4 +1,5 @@
 const pup = require("puppeteer");
+const fs = require("fs");
 
 class Crawler {
   username;
@@ -12,6 +13,7 @@ class Crawler {
     this.username = options.username;
     this.password = options.password;
     this.updateInterval = options.updateInterval || 10 * 60 * 1000;
+    this.offline = options.offline;
 
     this.fetchBookings();
     setInterval(this.fetchBookings, this.updateInterval);
@@ -20,6 +22,11 @@ class Crawler {
   }
 
   async fetchAircrafts() {
+    if (this.offline) {
+      this.aircrafts = require("./offline/aircrafts.json");
+      return false;
+    }
+
     const browser = await pup.launch();
 
     const page = await browser.newPage();
@@ -76,6 +83,10 @@ class Crawler {
   }
 
   async fetchBookings() {
+    if (this.offline) {
+      this.bookings = require("./offline/bookings.json");
+      return false;
+    }
     const browser = await pup.launch();
 
     const page = await browser.newPage();
@@ -120,83 +131,3 @@ class Crawler {
 }
 
 module.exports = Crawler;
-
-// const TIMEOUT = 15000;
-
-// (async () => {
-//   let d = new Date();
-//   const browser = await pup.launch();
-
-//   const page = await browser.newPage();
-//   await page.goto("https://ipa.flightlogger.net");
-
-//   // Login
-//   await page.type("#user_session_email", "info@intlpilotacademy.com");
-//   await page.type("#user_session_password", "Cessna172");
-//   await page.click("input[name=commit]", {waitUntil: "domcontentloaded"});
-//   // await page.waitForNavigation({waitUntil: "networkidle0"}).catch(e => console.log("Home page not loaded"));
-
-//   // // Go to Reports->Bookings
-//   // await page.goto("https://ipa.flightlogger.net/booking_report", {waitUntil: "networkidle2"});
-//   // await page.waitForTimeout(TIMEOUT);
-//   // // await page.waitForSelector("input[name=from]");
-//   // // await page.waitForNavigation({waitUntil: "networkidle2"}).catch(e => console.log("Could not load booking reports"));
-//   // await page.focus("input[name=from]");
-//   // await page.keyboard.down("Control");
-//   // await page.keyboard.press("A");
-//   // await page.keyboard.up("Control");
-//   // await page.keyboard.press("Backspace");
-//   // await page.type("input[name=from]", `${d.getDate()}.${d.getMonth() + 1}.${d.getFullYear()}`);
-//   // await page.focus("input[name=to]");
-//   // await page.keyboard.down("Control");
-//   // await page.keyboard.press("A");
-//   // await page.keyboard.up("Control");
-//   // await page.keyboard.press("Backspace");
-//   // await page.type("input[name=to]", `${d.getDate()}.${d.getMonth() + 1}.${d.getFullYear()}`);
-//   // await page.click("#submit-btn");
-//   // await page.waitForTimeout(TIMEOUT);
-//   // await page.screenshot({path: "bookings.png"});
-//   // await page.$("tbody").then(trs => {
-//   //   trs = Array.from(trs);
-//   //   // Get keys
-//   //   let keys = Array.from(trs[0].cells).map(c => c.textContent);
-//   //   trs.splice(0, 1);
-
-//   //   let data = trs.map(row => Array.from(row.cells).map(c => c.textContent));
-//   //   let bookings = data.map(row => {
-//   //     let booking = {};
-//   //     row.map((item, index) => {
-//   //       booking[keys[index]] = item;
-//   //     });
-//   //     return booking;
-//   //   });
-    
-//   //   return bookings;
-//   // }).then(bookings => {
-//   //   console.log(bookings);
-//   // });
-
-//   // Get bookings
-//   let BOOKINGS_URL = `https://ipa.flightlogger.net/api/v1/bookings?starts_at=2020-11-12T05%3A00%3A00.000Z&ends_at=2020-11-12T05%3A00%3A00.000Z&_=1605195585816`;
-
-//   await page.goto(BOOKINGS_URL, {waitUntil: "load"});
-//   let bookings = await page.content();
-//   // eww
-//   bookings = bookings.replace("<html><head></head><body><pre style=\"word-wrap: break-word; white-space: pre-wrap;\">", "");
-//   bookings = bookings.replace("</pre></body></html>", "");
-//   bookings = JSON.parse(bookings).bookings;
-
-//   let flightCount = bookings.filter(booking => booking.flight_starts_at).length;
-//   let flightsLeft = bookings.filter(booking => {
-//     let currentTime = (new Date()).getTime();
-//     let endTime = new Date(booking.flight_ends_at).getTime();
-//     return booking.flight_starts_at && endTime > currentTime;
-//   }).length;
-
-//   console.log(`Flights today: ${flightCount}, flights left: ${flightsLeft}`);
-  
-
-//   // await page.screenshot({path: "status.png"});
-
-//   await browser.close();
-// })();
