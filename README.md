@@ -27,3 +27,7 @@ You will need a `config.json` file in the `/server` folder.
 ```
 Where `crawler` information is for the flight log server.
 ICAO API key can be created at [https://www.icao.int/safety/iStars/HTMLPage/API-Data-Service.html](ICAO Website) and is used for METAR and NOTAM data.
+
+## Offline mode
+
+To use in offline mode, look for the constant `USE_OFFLINE` in `server/index.js`. Change it to `true`
