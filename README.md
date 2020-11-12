@@ -1,24 +1,29 @@
-# ipa-dashboard
+# IPA Dashboard POC
 
-## Project setup
+## Install Instructions
+
 ```
+git clone https://github.com/joellord/ipa-dashboard
+cd ipa-dashboard
 npm install
+node .
 ```
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+Point your browser to `http://localhost:3000`
 
-### Compiles and minifies for production
-```
-npm run build
-```
+## Configuration
 
-### Lints and fixes files
-```
-npm run lint
-```
+You will need a `config.json` file in the `/server` folder. 
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+```
+{
+  "crawler": {
+    "username": "info@",
+    "password": "pass",
+    "base_url": "https://somethingsomething.website.tld"
+  },
+  "icao_api_key": "73436680-2451-11eb-b151-073f9d3e9a96"
+}
+```
+Where `crawler` information is for the flight log server.
+ICAO API key can be created at [https://www.icao.int/safety/iStars/HTMLPage/API-Data-Service.html](ICAO Website) and is used for METAR and NOTAM data.
